@@ -58,3 +58,6 @@ Type inference as served from the compiler may not be your best friend at all ti
 Also, I could do away with some code duplication, although this does not bother me very much right now.
 
 Overall, the fun factor of doing this has been enormous.
+
+### Motto
+> Less is more. Use both with a pipe.
