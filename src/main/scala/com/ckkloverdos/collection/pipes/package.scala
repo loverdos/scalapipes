@@ -36,16 +36,25 @@ package object pipes {
 
     val letters = Seq('a', 'b', 'c', 'd', 'a')
     val As = letters |>  PSeq.filter(ch ⇒ ch == 'a')
+    val As_ = letters |>  PSeq.filter(_ == 'a')
     val AsLen = As |> PSeq.length
     val AsLenPlusOne = As |>
       PSeq.length |>
       (_ + 1)
 
-    val less = IndexedSeq(1, 2, 3) |> PSeq.filter(_ < 2)
+    val numbers = IndexedSeq(1, 2, 3, 4, 5, 6)
+    val lessThanFour = numbers |> PSeq.filter(_ < 4)
 
     val map = Map(1 → "one", 2 → "two", 3 → "three")
     val incKeys = map |>
       PMap.map {case (k, v) ⇒ k } |>
       PSeq.ofIterable
   }
+
+
+  val keys = Map(1 → "keyA", 2 → "keyB", 3 → "keyC")
+  val newKeys = keys.map { case (k, v) ⇒ (k + 1, v) }
+  val keysPlus = keys |>
+    PMap.map { case (k, v) ⇒ (k + 1, v) } |>
+    PMap.ofIterable
 }
