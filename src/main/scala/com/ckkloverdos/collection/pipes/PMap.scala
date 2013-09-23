@@ -34,6 +34,8 @@ object PMap {
 
   @inline final def size[A, B]: Map[A, B] ⇒ Int = _.size
 
+  @inline final def groupBy[A, B, K](f: ((A, B)) ⇒ K): Map[A, B] ⇒ Map[K, Map[A, B]] = _.groupBy(f)
+
   // ML-ish
   @inline final def iter[A, B](f: ((A, B)) ⇒ Unit): Map[A, B] ⇒ Unit = _.foreach(f)
 

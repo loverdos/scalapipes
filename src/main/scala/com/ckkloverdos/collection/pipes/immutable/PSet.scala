@@ -17,6 +17,7 @@
 package com.ckkloverdos.collection.pipes.immutable
 
 import scala.collection.immutable.Set
+import scala.collection.immutable.Map
 
 /**
   *
@@ -33,10 +34,22 @@ object PSet {
 
    @inline final def size[A]: Set[A] ⇒ Int = _.size
 
-   // ML-ish
+  @inline final def first[A]: Set[A] ⇒ Option[A] = _.headOption
+
+  @inline final def partition[A](f: (A) ⇒ Boolean): Set[A] ⇒ (Set[A], Set[A]) = _.partition(f)
+
+  @inline final def groupBy[A, K](f: (A) ⇒ K): Set[A] ⇒ Map[K, Set[A]] = _.groupBy(f)
+
+  @inline final def mkString[A](sep: String): Set[A] ⇒ String = _.mkString(sep)
+
+  @inline final def mkString[A](start: String, sep: String, end: String): Set[A] ⇒ String = _.mkString(start, sep, end)
+
+  // ML-ish
    @inline final def iter[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
 
    @inline final def ofIterable[A]: Iterable[A] ⇒ Set[A] = _.toSet
+
+  @inline final def ofSeq[A]: Seq[A] ⇒ Set[A] = _.toSet
 
    @inline final def ofList[A]: List[A] ⇒ Set[A] = _.toSet
 

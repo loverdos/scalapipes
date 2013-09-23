@@ -16,6 +16,7 @@
 
 package com.ckkloverdos.collection.pipes
 import scala.collection.Seq
+import scala.collection.Map
 
 /**
  * Piping utilities for a [[scala.collection.Seq]].
@@ -32,6 +33,18 @@ object PSeq {
   @inline final def length[A]: Seq[A] ⇒ Int = _.length
 
   @inline final def size[A]: Seq[A] ⇒ Int = _.length
+
+  @inline final def take[A](n: Int): Seq[A] ⇒ Seq[A] = _.take(n)
+
+  @inline final def first[A]: Seq[A] ⇒ Option[A] = _.headOption
+
+  @inline final def partition[A](f: (A) ⇒ Boolean): Seq[A] ⇒ (Seq[A], Seq[A]) = _.partition(f)
+
+  @inline final def groupBy[A, K](f: (A) ⇒ K): Seq[A] ⇒ Map[K, Seq[A]] = _.groupBy(f)
+
+  @inline final def mkString[A](sep: String): Seq[A] ⇒ String = _.mkString(sep)
+
+  @inline final def mkString[A](start: String, sep: String, end: String): Seq[A] ⇒ String = _.mkString(start, sep, end)
 
   // ML-ish
   @inline final def iter[A](f: (A) ⇒ Unit): Seq[A] ⇒ Unit = _.foreach(f)
