@@ -16,6 +16,7 @@
 
 package com.ckkloverdos.collection.pipes.mutable
 import scala.collection.mutable.Seq
+import scala.collection.mutable.Map
 
 /**
  *
@@ -25,6 +26,10 @@ object PSeq {
   @inline final def filter[A](p: (A) ⇒ Boolean): Seq[A] ⇒ Seq[A] = _.filter(p)
 
   @inline final def map[A, B](f: (A) ⇒ B): Seq[A] ⇒ Seq[B] = _.map(f)
+
+  @inline final def map_1[A]: Seq[(A, _)] ⇒ Seq[A] = _.map(_._1)
+
+  @inline final def map_2[A]: Seq[(_, A)] ⇒ Seq[A] = _.map(_._2)
 
   @inline final def foreach[A](f: (A) ⇒ Unit): Seq[A] ⇒ Unit = _.foreach(f)
 
@@ -43,6 +48,8 @@ object PSeq {
   // ML-ish
   @inline final def iter[A](f: (A) ⇒ Unit): Seq[A] ⇒ Unit = _.foreach(f)
 
+  @inline final def ofOne[A](x: A): Seq[A] = Seq(x)
+
   @inline final def ofIterable[A]: Iterable[A] ⇒ Seq[A] = it ⇒ scala.collection.mutable.Seq(it.toSeq:_*)
 
   @inline final def ofList[A]: List[A] ⇒ Seq[A] = it ⇒ scala.collection.mutable.Seq(it.toSeq:_*)
@@ -50,4 +57,17 @@ object PSeq {
   @inline final def ofArray[A]: Array[A] ⇒ Seq[A] = it ⇒ scala.collection.mutable.Seq(it.toSeq:_*)
 
   @inline final def ofMap[A, B]: Map[A, B] ⇒ Seq[(A, B)] = it ⇒ scala.collection.mutable.Seq(it.toSeq:_*)
+
+  @inline final def ofMapSortedValuesBy[A, B, C](sortBy: (B) ⇒ C)(implicit ord: Ordering[C]): Map[A, B] ⇒ Seq[B] =
+    it ⇒ Seq(it.toSeq.sortBy(kv ⇒ sortBy(kv._2)).map(_._2):_*)
+
+  @inline final def ofMapFilteredValuesByKey[A, B](p: (A) ⇒ Boolean): Map[A, B] ⇒ Seq[B] =
+    it ⇒ Seq((for((k, v) ← it if p(k)) yield v).toSeq:_*)
+
+  @inline final def ofMapValues[A, B]: Map[A, B] ⇒ Seq[B] = it ⇒ Seq(it.values.toSeq:_*)
+
+  @inline final def ofJava[E]: java.util.Collection[E] ⇒ Seq[E] = it ⇒ {
+    import scala.collection.JavaConverters._
+    Seq(it.asScala.toSeq:_*)
+  }
 }

@@ -19,19 +19,23 @@ package com.ckkloverdos.collection.pipes.mutable
 import scala.collection.mutable.Set
 
 /**
-  *
-  * @author Christos KK Loverdos <loverdos@gmail.com>
-  */
+ *
+ * @author Christos KK Loverdos <loverdos@gmail.com>
+ */
 object PSet {
-   @inline final def filter[A](p: (A) ⇒ Boolean): Set[A] ⇒ Set[A] = _.filter(p)
+  @inline final def filter[A](p: (A) ⇒ Boolean): Set[A] ⇒ Set[A] = _.filter(p)
 
-   @inline final def map[A, B](f: (A) ⇒ B): Set[A] ⇒ Set[B] = _.map(f)
+  @inline final def map[A, B](f: (A) ⇒ B): Set[A] ⇒ Set[B] = _.map(f)
 
-   @inline final def foreach[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
+  @inline final def map_1[A]: Set[(A, _)] ⇒ Set[A] = _.map(_._1)
 
-   @inline final def length[A]: Set[A] ⇒ Int = _.size
+  @inline final def map_2[A]: Set[(_, A)] ⇒ Set[A] = _.map(_._2)
 
-   @inline final def size[A]: Set[A] ⇒ Int = _.size
+  @inline final def foreach[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
+
+  @inline final def length[A]: Set[A] ⇒ Int = _.size
+
+  @inline final def size[A]: Set[A] ⇒ Int = _.size
 
   @inline final def first[A]: Set[A] ⇒ Option[A] = _.headOption
 
@@ -43,18 +47,28 @@ object PSet {
 
   @inline final def mkString[A](start: String, sep: String, end: String): Set[A] ⇒ String = _.mkString(start, sep, end)
 
-   // ML-ish
-   @inline final def iter[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
+  // ML-ish
+  @inline final def iter[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
 
-   @inline final def ofIterable[A]: Iterable[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq:_*)
+  @inline final def ofOne[A](x: A): Set[A] = Set(x)
 
-  @inline final def ofSeq[A]: Seq[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq:_*)
+  @inline final def ofIterable[A]: Iterable[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
 
-   @inline final def ofList[A]: List[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq:_*)
+  @inline final def ofSeq[A]: Seq[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
 
-   @inline final def ofArray[A]: Array[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq:_*)
+  @inline final def ofList[A]: List[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
 
-   @inline final def ofMap[A, B]: Map[A, B] ⇒ Set[(A, B)] = it ⇒ scala.collection.mutable.Set(it.toSeq:_*)
+  @inline final def ofArray[A]: Array[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
 
-   @inline final def ofSet[A]: Set[A] ⇒ Set[A] = identity
- }
+  @inline final def ofMap[A, B]: Map[A, B] ⇒ Set[(A, B)] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
+
+  @inline final def ofSet[A]: Set[A] ⇒ Set[A] = identity
+
+  @inline final def ofJava[E]: java.util.Set[E] ⇒ Set[E] = it ⇒ {
+    import scala.collection.JavaConverters._
+    Set(it.asScala.toSeq:_*)
+  }
+
+  @inline final def ofEnumSet[E <: Enum[E]](cls: Class[E]): Set[E] =
+    ofJava(java.util.EnumSet.allOf(cls))
+}

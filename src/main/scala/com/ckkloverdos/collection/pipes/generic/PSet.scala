@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes
-import scala.collection.Set
+package com.ckkloverdos.collection.pipes.generic
+
 import scala.collection.Map
+import scala.collection.Set
 
 /**
  *
@@ -26,6 +27,10 @@ object PSet {
   @inline final def filter[A](p: (A) ⇒ Boolean): Set[A] ⇒ Set[A] = _.filter(p)
 
   @inline final def map[A, B](f: (A) ⇒ B): Set[A] ⇒ Set[B] = _.map(f)
+
+  @inline final def map_1[A]: Set[(A, _)] ⇒ Set[A] = _.map(_._1)
+
+  @inline final def map_2[A]: Set[(_, A)] ⇒ Set[A] = _.map(_._2)
 
   @inline final def foreach[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
 
@@ -46,6 +51,8 @@ object PSet {
   // ML-ish
   @inline final def iter[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
 
+  @inline final def ofOne[A](x: A): Set[A] = Set(x)
+
   @inline final def ofIterable[A]: Iterable[A] ⇒ Set[A] = _.toSet
 
   @inline final def ofSeq[A]: Seq[A] ⇒ Set[A] = _.toSet
@@ -57,4 +64,12 @@ object PSet {
   @inline final def ofMap[A, B]: Map[A, B] ⇒ Set[(A, B)] = _.toSet
 
   @inline final def ofSet[A]: Set[A] ⇒ Set[A] = identity
+
+  @inline final def ofJava[E]: java.util.Set[E] ⇒ Set[E] = it ⇒ {
+    import scala.collection.JavaConverters._
+    Set(it.asScala.toSeq:_*)
+  }
+
+  @inline final def ofEnumSet[E <: Enum[E]](cls: Class[E]): Set[E] =
+    ofJava(java.util.EnumSet.allOf(cls))
 }

@@ -16,6 +16,8 @@
 
 package com.ckkloverdos.collection
 
+import com.ckkloverdos.collection.pipes.generic
+
 /**
  * Scala collections with forward pipe operator, as in F# and OCaml.
  * No batteries included.
@@ -28,6 +30,21 @@ package object pipes {
     def |>[B](f: (T) ⇒ B) = f(x)
   }
 
+  // Fix Predef
+  final type Seq[+A] = scala.collection.immutable.Seq[A]
+  final val Seq = scala.collection.immutable.Seq
+
+
+  final val IOption = immutable.POption
+
+  final val ISeq    = immutable.PSeq
+  final val ISet    = immutable.PSet
+  final val IMap    = immutable.PMap
+
+  final val MSeq    = mutable.PSeq
+  final val MSet    = mutable.PSet
+//  val MMap    = mutable.PMap
+
   private[this] object tests {
     val one = 1
     val two = one |> (_ + 1)
@@ -35,26 +52,26 @@ package object pipes {
     val threeAgain = one |> (_ + 1) |> (_ + 1)
 
     val letters = Seq('a', 'b', 'c', 'd', 'a')
-    val As = letters |>  PSeq.filter(ch ⇒ ch == 'a')
-    val As_ = letters |>  PSeq.filter(_ == 'a')
-    val AsLen = As |> PSeq.length
+    val As = letters |>  generic.PSeq.filter(ch ⇒ ch == 'a')
+    val As_ = letters |>  generic.PSeq.filter(_ == 'a')
+    val AsLen = As |> generic.PSeq.length
     val AsLenPlusOne = As |>
-      PSeq.length |>
+      generic.PSeq.length |>
       (_ + 1)
 
     val numbers = IndexedSeq(1, 2, 3, 4, 5, 6)
-    val lessThanFour = numbers |> PSeq.filter(_ < 4)
+    val lessThanFour = numbers |> generic.PSeq.filter(_ < 4)
 
     val map = Map(1 → "one", 2 → "two", 3 → "three")
     val incKeys = map |>
-      PMap.map {case (k, v) ⇒ k } |>
-      PSeq.ofIterable
+      generic.PMap.map {case (k, v) ⇒ k } |>
+      generic.PSeq.ofIterable
   }
 
 
   val keys = Map(1 → "keyA", 2 → "keyB", 3 → "keyC")
   val newKeys = keys.map { case (k, v) ⇒ (k + 1, v) }
   val keysPlus = keys |>
-    PMap.map { case (k, v) ⇒ (k + 1, v) } |>
-    PMap.ofIterable
+    generic.PMap.map { case (k, v) ⇒ (k + 1, v) } |>
+    generic.PMap.ofIterable
 }

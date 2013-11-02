@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes.immutable
-import scala.collection.immutable.Map
+package com.ckkloverdos.collection.pipes.generic
+
+import scala.collection.Map
 import scala.collection.Seq
 import scala.collection.Set
 
@@ -34,6 +35,8 @@ object PMap {
 
   @inline final def size[A, B]: Map[A, B] ⇒ Int = _.size
 
+  @inline final def groupBy[A, B, K](f: ((A, B)) ⇒ K): Map[A, B] ⇒ Map[K, Map[A, B]] = _.groupBy(f)
+
   // ML-ish
   @inline final def iter[A, B](f: ((A, B)) ⇒ Unit): Map[A, B] ⇒ Unit = _.foreach(f)
 
@@ -49,7 +52,7 @@ object PMap {
 
   @inline final def ofJava[K, V]: java.util.Map[K, V] ⇒ Map[K, V] = it ⇒ {
     import scala.collection.JavaConverters._
-    Map(it.asScala.toSeq:_*)
+    it.asScala
   }
 
   @inline final def ofFuncWithInitialMap[K, V](initialMap: Map[K, V] = Map())(f: (K) ⇒ V): Map[K, V] =
