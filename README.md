@@ -5,7 +5,7 @@ The original use-case is how to handle collections, that is why the parent packa
 
 To get an idea of what you can do:
 
-    import com.ckkloverdos.collection.pipes._
+    import com.ckkloverdos.pipes.collection.pipes._
     
     val letters = Seq('a', 'b', 'c', 'd', 'a')
     val As = letters |> 

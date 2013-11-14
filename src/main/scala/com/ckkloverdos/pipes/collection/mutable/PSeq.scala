@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes.immutable
+package com.ckkloverdos.pipes.collection.mutable
 
-import scala.collection.immutable.Seq
-import scala.collection.immutable.Map
+import scala.collection.mutable.Seq
+import scala.collection.mutable.Map
 
 /**
  *
@@ -25,6 +25,10 @@ import scala.collection.immutable.Map
  */
 object PSeq {
   @inline final def filter[A](p: (A) ⇒ Boolean): Seq[A] ⇒ Seq[A] = _.filter(p)
+
+  @inline final def find[A](p: (A) ⇒ Boolean): Seq[A] ⇒ Option[A] = _.find(p)
+
+  @inline final def filterDefined[A]: Seq[Option[A]] ⇒ Seq[A] = _.withFilter(_.isDefined).map(_.get)
 
   @inline final def map[A, B](f: (A) ⇒ B): Seq[A] ⇒ Seq[B] = _.map(f)
 
@@ -42,24 +46,30 @@ object PSeq {
 
   @inline final def partition[A](f: (A) ⇒ Boolean): Seq[A] ⇒ (Seq[A], Seq[A]) = _.partition(f)
 
-  @inline final def groupBy[A, K](f: (A) ⇒ K): Seq[A] ⇒ Map[K, Seq[A]] = _.groupBy(f)
-
   @inline final def mkString[A](sep: String): Seq[A] ⇒ String = _.mkString(sep)
 
   @inline final def mkString[A](start: String, sep: String, end: String): Seq[A] ⇒ String = _.mkString(start, sep, end)
+
+  // This is for debugging
+  @inline final def passThrough[A](f: (A) ⇒ Any): Seq[A] ⇒ Seq[A] = seq ⇒ {
+    seq.foreach(f)
+    seq
+  }
 
   // ML-ish
   @inline final def iter[A](f: (A) ⇒ Unit): Seq[A] ⇒ Unit = _.foreach(f)
 
   @inline final def ofOne[A](x: A): Seq[A] = Seq(x)
 
-  @inline final def ofIterable[A]: Iterable[A] ⇒ Seq[A] = it ⇒ Seq(it.toSeq:_*)
+  @inline final def ofIterable[A]: Iterable[A] ⇒ Seq[A] = _.to[Seq]
 
-  @inline final def ofList[A]: List[A] ⇒ Seq[A] = _.toSeq
+  @inline final def ofIterator[A]: Iterator[A] ⇒ Seq[A] = _.to[Seq]
 
-  @inline final def ofArray[A]: Array[A] ⇒ Seq[A] = it ⇒ Seq(it.toSeq:_*)
+  @inline final def ofList[A]: List[A] ⇒ Seq[A] = _.to[Seq]
 
-  @inline final def ofMap[A, B]: Map[A, B] ⇒ Seq[(A, B)] = it ⇒ Seq(it.toSeq:_*)
+  @inline final def ofArray[A]: Array[A] ⇒ Seq[A] = _.to[Seq]
+
+  @inline final def ofMap[A, B]: Map[A, B] ⇒ Seq[(A, B)] = _.to[Seq]
 
   @inline final def ofMapSortedValuesBy[A, B, C](sortBy: (B) ⇒ C)(implicit ord: Ordering[C]): Map[A, B] ⇒ Seq[B] =
     it ⇒ Seq(it.toSeq.sortBy(kv ⇒ sortBy(kv._2)).map(_._2):_*)
@@ -71,6 +81,11 @@ object PSeq {
 
   @inline final def ofJava[E]: java.util.Collection[E] ⇒ Seq[E] = it ⇒ {
     import scala.collection.JavaConverters._
-    Seq(it.asScala.toSeq:_*)
+    it.asScala.to[Seq]
+  }
+
+  @inline final def ofOption[A]: Option[A] ⇒ Seq[A] = {
+    case Some(value) ⇒ Seq(value)
+    case None ⇒ Seq()
   }
 }

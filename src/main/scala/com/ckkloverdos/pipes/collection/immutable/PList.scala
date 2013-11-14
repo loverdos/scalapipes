@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes.immutable
+package com.ckkloverdos.pipes.collection.immutable
+
 import scala.collection.Iterable
 
 /**

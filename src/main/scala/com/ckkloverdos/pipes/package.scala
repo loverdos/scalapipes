@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection
+package com.ckkloverdos
 
-import com.ckkloverdos.collection.pipes.generic
+import com.ckkloverdos.pipes.collection.{generic, mutable, immutable}
 
 /**
  * Scala collections with forward pipe operator, as in F# and OCaml.
@@ -34,10 +34,15 @@ package object pipes {
   final type Seq[+A] = scala.collection.immutable.Seq[A]
   final val Seq = scala.collection.immutable.Seq
 
+  final val JList = mutable.JList
 
   final val IOption = immutable.POption
 
+  final val IFuture = concurrent.PFuture
+  final val IPromise = concurrent.PPromise
+
   final val ISeq    = immutable.PSeq
+  final val IStream = immutable.PStream
   final val ISet    = immutable.PSet
   final val IMap    = immutable.PMap
 

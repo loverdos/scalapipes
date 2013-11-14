@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes.immutable
-import scala.collection.immutable.Map
+package com.ckkloverdos.pipes.collection.generic
+
+import scala.collection.Map
 import scala.collection.Seq
 import scala.collection.Set
 
@@ -30,9 +31,15 @@ object PMap {
 
   @inline final def foreach[A, B](f: ((A, B)) ⇒ Unit): Map[A, B] ⇒ Unit = _.foreach(f)
 
+  @inline final def foreachKey[A, B](f: (A) ⇒ Unit): Map[A, B] ⇒ Unit = _.keysIterator.foreach(f)
+
+  @inline final def foreachValue[A, B](f: (B) ⇒ Unit): Map[A, B] ⇒ Unit = _.valuesIterator.foreach(f)
+
   @inline final def length[A, B]: Map[A, B] ⇒ Int = _.size
 
   @inline final def size[A, B]: Map[A, B] ⇒ Int = _.size
+
+  @inline final def groupBy[A, B, K](f: ((A, B)) ⇒ K): Map[A, B] ⇒ Map[K, Map[A, B]] = _.groupBy(f)
 
   // ML-ish
   @inline final def iter[A, B](f: ((A, B)) ⇒ Unit): Map[A, B] ⇒ Unit = _.foreach(f)
@@ -45,11 +52,16 @@ object PMap {
 
   @inline final def ofIterable[A, B]: Iterable[(A, B)] ⇒ Map[A, B] = _.toMap
 
+  @inline final def ofIterator[A, B]: Iterator[(A, B)] ⇒ Map[A, B] = _.toMap
+
+  @inline final def ofMapMappingValues[A, B, C](vmap: (B) ⇒ C): scala.collection.Map[A, B] ⇒ Map[A, C] =
+    _.map { case (k, v) ⇒ (k, vmap(v)) }. toMap
+
   @inline final def ofArray[A, B]: Array[(A, B)] ⇒ Map[A, B] = _.toMap
 
   @inline final def ofJava[K, V]: java.util.Map[K, V] ⇒ Map[K, V] = it ⇒ {
     import scala.collection.JavaConverters._
-    Map(it.asScala.toSeq:_*)
+    it.asScala
   }
 
   @inline final def ofFuncWithInitialMap[K, V](initialMap: Map[K, V] = Map())(f: (K) ⇒ V): Map[K, V] =

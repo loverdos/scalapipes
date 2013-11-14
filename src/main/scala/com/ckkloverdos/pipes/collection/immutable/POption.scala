@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes
-package immutable
+package com.ckkloverdos.pipes.collection.immutable
 
 import scala.collection.{Seq, Map, Set}
+
 /**
  *
  * @author Christos KK Loverdos <loverdos@gmail.com>
@@ -25,11 +25,15 @@ import scala.collection.{Seq, Map, Set}
 object POption {
   @inline final def filter[A](p: (A) ⇒ Boolean): Option[A] ⇒ Option[A] = _.filter(p)
 
+  @inline final def getOr[A](default: ⇒A): Option[A] ⇒ A = _.getOrElse(default)
+
   @inline final def map[A, B](f: (A) ⇒ B): Option[A] ⇒ Option[B] = _.map(f)
 
   @inline final def map_1[A]: Option[(A, _)] ⇒ Option[A] = _.map(_._1)
 
   @inline final def map_2[A]: Option[(_, A)] ⇒ Option[A] = _.map(_._2)
+
+  @inline final def flatMap[A, B](f: (A) ⇒ Option[B]): Option[A] ⇒ Option[B] = _.flatMap(f)
 
   @inline final def foreach[A](f: (A) ⇒ Unit): Option[A] ⇒ Unit = _.foreach(f)
 

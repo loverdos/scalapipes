@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes.generic
+package com.ckkloverdos.pipes.collection.immutable
 
-import scala.collection.Map
-import scala.collection.Set
+import scala.collection.immutable.Set
+import scala.collection.immutable.Seq
+import scala.collection.immutable.Map
 
 /**
  *
@@ -25,6 +26,10 @@ import scala.collection.Set
  */
 object PSet {
   @inline final def filter[A](p: (A) ⇒ Boolean): Set[A] ⇒ Set[A] = _.filter(p)
+
+  @inline final def find[A](p: (A) ⇒ Boolean): Set[A] ⇒ Option[A] = _.find(p)
+
+  @inline final def filterDefined[A]: Set[Option[A]] ⇒ Set[A] = _.withFilter(_.isDefined).map(_.get)
 
   @inline final def map[A, B](f: (A) ⇒ B): Set[A] ⇒ Set[B] = _.map(f)
 
@@ -48,12 +53,20 @@ object PSet {
 
   @inline final def mkString[A](start: String, sep: String, end: String): Set[A] ⇒ String = _.mkString(start, sep, end)
 
+  // This is for debugging
+  @inline final def passThrough[A](f: (A) ⇒ Any): Set[A] ⇒ Set[A] = set ⇒ {
+    set.foreach(f)
+    set
+  }
+
   // ML-ish
   @inline final def iter[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
 
   @inline final def ofOne[A](x: A): Set[A] = Set(x)
 
   @inline final def ofIterable[A]: Iterable[A] ⇒ Set[A] = _.toSet
+
+  @inline final def ofIterator[A]: Iterator[A] ⇒ Set[A] = _.to[Set]
 
   @inline final def ofSeq[A]: Seq[A] ⇒ Set[A] = _.toSet
 
@@ -67,9 +80,14 @@ object PSet {
 
   @inline final def ofJava[E]: java.util.Set[E] ⇒ Set[E] = it ⇒ {
     import scala.collection.JavaConverters._
-    Set(it.asScala.toSeq:_*)
+    it.asScala.to[Set]
   }
 
   @inline final def ofEnumSet[E <: Enum[E]](cls: Class[E]): Set[E] =
-    ofJava(java.util.EnumSet.allOf(cls))
+     ofJava(java.util.EnumSet.allOf(cls))
+
+  @inline final def ofOption[A]: Option[A] ⇒ Set[A] = {
+    case Some(value) ⇒ Set(value)
+    case None ⇒ Set()
+  }
 }

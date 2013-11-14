@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.ckkloverdos.collection.pipes.mutable
+package com.ckkloverdos.pipes.collection.generic
 
-import scala.collection.mutable.Set
+import scala.collection.Map
+import scala.collection.Set
 
 /**
  *
@@ -24,6 +25,10 @@ import scala.collection.mutable.Set
  */
 object PSet {
   @inline final def filter[A](p: (A) ⇒ Boolean): Set[A] ⇒ Set[A] = _.filter(p)
+
+  @inline final def find[A](p: (A) ⇒ Boolean): Set[A] ⇒ Option[A] = _.find(p)
+
+  @inline final def filterDefined[A]: Set[Option[A]] ⇒ Set[A] = _.withFilter(_.isDefined).map(_.get)
 
   @inline final def map[A, B](f: (A) ⇒ B): Set[A] ⇒ Set[B] = _.map(f)
 
@@ -47,28 +52,41 @@ object PSet {
 
   @inline final def mkString[A](start: String, sep: String, end: String): Set[A] ⇒ String = _.mkString(start, sep, end)
 
+  // This is for debugging
+  @inline final def passThrough[A](f: (A) ⇒ Any): Set[A] ⇒ Set[A] = set ⇒ {
+    set.foreach(f)
+    set
+  }
+
   // ML-ish
   @inline final def iter[A](f: (A) ⇒ Unit): Set[A] ⇒ Unit = _.foreach(f)
 
   @inline final def ofOne[A](x: A): Set[A] = Set(x)
 
-  @inline final def ofIterable[A]: Iterable[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
+  @inline final def ofIterable[A]: Iterable[A] ⇒ Set[A] = _.toSet
 
-  @inline final def ofSeq[A]: Seq[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
+  @inline final def ofIterator[A]: Iterator[A] ⇒ Set[A] = _.toSet
 
-  @inline final def ofList[A]: List[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
+  @inline final def ofSeq[A]: Seq[A] ⇒ Set[A] = _.toSet
 
-  @inline final def ofArray[A]: Array[A] ⇒ Set[A] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
+  @inline final def ofList[A]: List[A] ⇒ Set[A] = _.toSet
 
-  @inline final def ofMap[A, B]: Map[A, B] ⇒ Set[(A, B)] = it ⇒ scala.collection.mutable.Set(it.toSeq: _*)
+  @inline final def ofArray[A]: Array[A] ⇒ Set[A] = _.toSet
+
+  @inline final def ofMap[A, B]: Map[A, B] ⇒ Set[(A, B)] = _.toSet
 
   @inline final def ofSet[A]: Set[A] ⇒ Set[A] = identity
 
   @inline final def ofJava[E]: java.util.Set[E] ⇒ Set[E] = it ⇒ {
     import scala.collection.JavaConverters._
-    Set(it.asScala.toSeq:_*)
+    it.asScala.to[Set]
   }
 
   @inline final def ofEnumSet[E <: Enum[E]](cls: Class[E]): Set[E] =
     ofJava(java.util.EnumSet.allOf(cls))
+
+  @inline final def ofOption[A]: Option[A] ⇒ Set[A] = {
+    case Some(value) ⇒ Set(value)
+    case None ⇒ Set()
+  }
 }
